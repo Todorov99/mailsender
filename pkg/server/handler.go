@@ -12,7 +12,13 @@ import (
 func HandleRequest(port string) error {
 	routes := mux.NewRouter().StrictSlash(true)
 
-	routes.HandleFunc("/api/mail/send", controller.Send).Methods("Get")
+	senderController, err := controller.NewSenderController()
+	if err != nil {
+		return err
+	}
+
+	routes.HandleFunc("/api/mail/attachment/send", senderController.SendWithAttachment).Methods("POST")
+	routes.HandleFunc("/api/mail/send", senderController.Send).Methods("POST")
 
 	return http.ListenAndServe(fmt.Sprintf(":%s", port), routes)
 }

@@ -1,6 +1,11 @@
+# github.com/Todorov99/sensorcli v0.0.0-20220403122718-196145993b9c
+## explicit; go 1.17
+github.com/Todorov99/sensorcli/pkg/logger
 # github.com/fsnotify/fsnotify v1.5.1
 ## explicit; go 1.13
 github.com/fsnotify/fsnotify
+# github.com/go-test/deep v1.0.8
+## explicit; go 1.16
 # github.com/gorilla/mux v1.8.0
 ## explicit; go 1.12
 github.com/gorilla/mux
@@ -19,7 +24,7 @@ github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.0.0
 ## explicit
 github.com/inconshreveable/mousetrap
-# github.com/magiconair/properties v1.8.5
+# github.com/magiconair/properties v1.8.6
 ## explicit; go 1.13
 github.com/magiconair/properties
 # github.com/mitchellh/go-homedir v1.1.0
@@ -31,7 +36,10 @@ github.com/mitchellh/mapstructure
 # github.com/pelletier/go-toml v1.9.4
 ## explicit; go 1.12
 github.com/pelletier/go-toml
-# github.com/spf13/afero v1.6.0
+# github.com/sirupsen/logrus v1.8.1
+## explicit; go 1.13
+github.com/sirupsen/logrus
+# github.com/spf13/afero v1.8.2
 ## explicit; go 1.13
 github.com/spf13/afero
 github.com/spf13/afero/mem
@@ -58,15 +66,22 @@ github.com/spf13/viper/internal/encoding/yaml
 # github.com/subosito/gotenv v1.2.0
 ## explicit
 github.com/subosito/gotenv
-# golang.org/x/sys v0.0.0-20211210111614-af8b64212486
+# github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208
+## explicit
+github.com/toorop/go-dkim
+# github.com/xhit/go-simple-mail/v2 v2.11.0
+## explicit; go 1.13
+github.com/xhit/go-simple-mail/v2
+# golang.org/x/sys v0.0.0-20220310020820-b874c991c1a5
 ## explicit; go 1.17
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
+golang.org/x/sys/windows
 # golang.org/x/text v0.3.7
 ## explicit; go 1.17
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
-# gopkg.in/ini.v1 v1.66.2
+# gopkg.in/ini.v1 v1.66.4
 ## explicit
 gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.4.0
