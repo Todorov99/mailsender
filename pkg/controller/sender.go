@@ -37,17 +37,17 @@ func (s *senderController) Send(w http.ResponseWriter, r *http.Request) {
 	mailInfo := dto.MailSenderDto{}
 	err := json.NewDecoder(r.Body).Decode(&mailInfo)
 	if err != nil {
-		response(w, "Failed sending mail", err, "failed sending meil", http.StatusBadRequest)
+		response(w, "Failed sending mail", err, "failed decoding mail sender information", http.StatusBadRequest)
 		return
 	}
 
 	err = s.mailSenderService.Send(mailInfo.Subject, mailInfo.Cc, mailInfo.To, mailInfo.Body)
 	if err != nil {
-		response(w, "Failed sending mail", err, "failed sending meil", http.StatusBadRequest)
+		response(w, "Failed sending mail", err, mailInfo, http.StatusBadRequest)
 		return
 	}
 
-	response(w, "Mail succesfully send", err, "mail successfully sent", http.StatusOK)
+	response(w, "Mail succesfully send", err, mailInfo, http.StatusOK)
 }
 func (s *senderController) SendWithAttachment(w http.ResponseWriter, r *http.Request) {
 	defer func() {
@@ -59,19 +59,19 @@ func (s *senderController) SendWithAttachment(w http.ResponseWriter, r *http.Req
 
 	err := json.Unmarshal([]byte(mailInfo), &mailSenderDto)
 	if err != nil {
-		response(w, "Failed sending mail with attachment", err, "failed sending meil", http.StatusBadRequest)
+		response(w, "Failed sending mail with attachment", err, "failed decoding mail sender information", http.StatusBadRequest)
 		return
 	}
 
 	f, _, err := r.FormFile("file")
 	if err != nil {
-		response(w, "Failed sending mail with attachment", err, "failed sending meil", http.StatusBadRequest)
+		response(w, "Failed sending mail with attachment", err, mailSenderDto, http.StatusBadRequest)
 		return
 	}
 
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, f); err != nil {
-		response(w, "Failed sending mail with attachment", err, "failed sending meil", http.StatusBadRequest)
+		response(w, "Failed sending mail with attachment", err, mailSenderDto, http.StatusBadRequest)
 		return
 	}
 
@@ -79,22 +79,22 @@ func (s *senderController) SendWithAttachment(w http.ResponseWriter, r *http.Req
 		mailSenderDto.Cc, mailSenderDto.To, mailSenderDto.Body, mailSenderDto.Filename, buf.Bytes())
 
 	if err != nil {
-		response(w, "Failed sending mail with attachment", err, "failed sending meil", http.StatusBadRequest)
+		response(w, "Failed sending mail with attachment", err, mailSenderDto, http.StatusBadRequest)
 		return
 	}
 
-	response(w, "Mail succesfully send", err, "mail successfully sent", http.StatusOK)
+	response(w, "Mail succesfully send", err, mailSenderDto, http.StatusOK)
 }
 
-func response(w http.ResponseWriter, loggMessagge string, err error, responseMsg string, failurStatusCode int) {
+func response(w http.ResponseWriter, loggMessagge string, err error, model interface{}, failurStatusCode int) {
 	controllerLogger.Info(loggMessagge)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(failurStatusCode)
 		controllerLogger.Error(err)
 		responseError := dto.Response{
-			ErrorMessage:    err.Error(),
-			ResponseMessage: responseMsg,
+			ErrorMessage: err.Error(),
+			MailInfo:     model,
 		}
 		json.NewEncoder(w).Encode(responseError)
 		return
@@ -103,7 +103,7 @@ func response(w http.ResponseWriter, loggMessagge string, err error, responseMsg
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	responseError := dto.Response{
-		ResponseMessage: responseMsg,
+		MailInfo: model,
 	}
 
 	json.NewEncoder(w).Encode(responseError)

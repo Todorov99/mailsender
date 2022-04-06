@@ -1,6 +1,6 @@
 package dto
 
 type Response struct {
-	ErrorMessage    string `json:"error,omitempty"`
-	ResponseMessage string `json:"responseMessage,omitempty"`
+	ErrorMessage string      `json:"error,omitempty"`
+	MailInfo     interface{} `json:"mailInfo,omitempty"`
 }

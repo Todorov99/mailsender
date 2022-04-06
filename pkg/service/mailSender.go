@@ -12,24 +12,16 @@ type MailSenderService interface {
 }
 
 type mailSender struct {
-	sender     string
-	email      *mail.Email
-	smtpClient *mail.SMTPClient
+	sender string
 }
 
 func NewMailSender() (MailSenderService, error) {
-	mailSmtpClient, err := smtp.NewMailSMPTClient()
-	if err != nil {
-		return nil, err
-	}
 	sender, err := smtp.GetSender()
 	if err != nil {
 		return nil, err
 	}
 	return &mailSender{
-		sender:     sender,
-		email:      mail.NewMSG(),
-		smtpClient: mailSmtpClient,
+		sender: sender,
 	}, nil
 }
 
@@ -38,7 +30,15 @@ func (m *mailSender) Sender(sender string) {
 }
 
 func (m *mailSender) Send(subject string, cc, addresses []string, mailBody string) error {
-	m.email.
+	email := mail.NewMSG()
+	mailSmtpClient, err := smtp.NewMailSMPTClient()
+	if err != nil {
+		return err
+	}
+
+	defer mailSmtpClient.Close()
+
+	email.
 		SetFrom(m.sender).
 		SetSubject(subject).
 		AddTo(addresses...).
@@ -46,15 +46,28 @@ func (m *mailSender) Send(subject string, cc, addresses []string, mailBody strin
 		SetBody(mail.TextPlain, mailBody).
 		SetPriority(mail.PriorityLow)
 
-	if err := m.email.Error; err != nil {
+	if err := email.Error; err != nil {
 		return err
 	}
 
-	return m.email.Send(m.smtpClient)
+	err = email.Send(mailSmtpClient)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *mailSender) SendWithAttachment(subject string, cc, addresses []string, mailBody, filename string, data []byte) error {
-	m.email.
+	email := mail.NewMSG()
+	mailSmtpClient, err := smtp.NewMailSMPTClient()
+	if err != nil {
+		return err
+	}
+
+	defer mailSmtpClient.Close()
+
+	email.
 		SetFrom(m.sender).
 		SetSubject(subject).
 		AddTo(addresses...).
@@ -67,9 +80,9 @@ func (m *mailSender) SendWithAttachment(subject string, cc, addresses []string, 
 			Inline: true,
 		})
 
-	if err := m.email.Error; err != nil {
+	if err := email.Error; err != nil {
 		return err
 	}
 
-	return m.email.Send(m.smtpClient)
+	return email.Send(mailSmtpClient)
 }
