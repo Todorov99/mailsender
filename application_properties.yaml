@@ -1,0 +1,7 @@
+SMTPServerCfg:
+  host: smtp.gmail.com
+  port: 587
+  passwordSecret: passwordSecret
+  keepAlive: true
+  connectionTimeout: 30s
+  sendTimeout: 30s
