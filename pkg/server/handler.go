@@ -17,7 +17,7 @@ func HandleRequest(port string) error {
 		return err
 	}
 
-	routes.HandleFunc("/api/mail/attachment/send", senderController.SendWithAttachment).Methods("POST")
+	routes.HandleFunc("/api/mail/attachment/send", senderController.SendWithAttachments).Methods("POST")
 	routes.HandleFunc("/api/mail/send", senderController.Send).Methods("POST")
 
 	return http.ListenAndServe(fmt.Sprintf(":%s", port), routes)
