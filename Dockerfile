@@ -11,6 +11,10 @@ COPY --from=builder /mailsender /mailsender
 
 VOLUME "/var/lib/mailsender"
 
-EXPOSE 8082/tcp
+ENV PORT 8082
+
+EXPOSE ${PORT}
+
 WORKDIR /mailsender
-ENTRYPOINT ["./mailsender", "start", "-p", "8082"]
+
+ENTRYPOINT ["./mailsender", "start"]

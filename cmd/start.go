@@ -16,12 +16,19 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/Todorov99/mailsender/pkg/server"
 	"github.com/spf13/cobra"
 )
 
 var (
 	port string
+)
+
+const (
+	PORT_ENV = "PORT"
 )
 
 // startCmd represents the start command
@@ -35,11 +42,18 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if port == "" {
+			serverPort := os.Getenv(PORT_ENV)
+			if serverPort == "" {
+				return fmt.Errorf("server port has not been specified")
+			}
+			return server.HandleRequest(serverPort)
+		}
 		return server.HandleRequest(port)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(startCmd)
-	startCmd.Flags().StringVarP(&port, "port", "p", "8080", "The port of the server")
+	startCmd.Flags().StringVarP(&port, "port", "p", "", "The port of the server")
 }

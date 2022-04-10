@@ -8,10 +8,10 @@ import (
 type MailSenderService interface {
 	Sender(sender string)
 	Send(subject string, cc, addresses []string, mailBody string) error
-	SendWithAttachment(subject string, cc, addresses []string, mailBody, filename string, data []byte) error
+	SendWithAttachments(subject string, cc, addresses []string, mailBody string, filesToAttach map[string][]byte) error
 }
 
-type mailSender struct {
+type mailSenderService struct {
 	sender string
 }
 
@@ -20,16 +20,18 @@ func NewMailSender() (MailSenderService, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &mailSender{
+	return &mailSenderService{
 		sender: sender,
 	}, nil
 }
 
-func (m *mailSender) Sender(sender string) {
+// Sender gets the name of the configured sender
+func (m *mailSenderService) Sender(sender string) {
 	m.sender = sender
 }
 
-func (m *mailSender) Send(subject string, cc, addresses []string, mailBody string) error {
+// Send sends a mail without any attachments to provided addresses
+func (m *mailSenderService) Send(subject string, cc, addresses []string, mailBody string) error {
 	email := mail.NewMSG()
 	mailSmtpClient, err := smtp.NewMailSMPTClient()
 	if err != nil {
@@ -58,8 +60,8 @@ func (m *mailSender) Send(subject string, cc, addresses []string, mailBody strin
 	return nil
 }
 
-func (m *mailSender) SendWithAttachment(subject string, cc, addresses []string, mailBody, filename string, data []byte) error {
-	email := mail.NewMSG()
+// Send sends a mail with single file attachments to provided addresses
+func (m *mailSenderService) SendWithAttachments(subject string, cc, addresses []string, mailBody string, filesToAttach map[string][]byte) error {
 	mailSmtpClient, err := smtp.NewMailSMPTClient()
 	if err != nil {
 		return err
@@ -67,22 +69,29 @@ func (m *mailSender) SendWithAttachment(subject string, cc, addresses []string, 
 
 	defer mailSmtpClient.Close()
 
+	email := setMailAttachments(mail.NewMSG(), filesToAttach)
 	email.
 		SetFrom(m.sender).
 		SetSubject(subject).
 		AddTo(addresses...).
 		AddCc(cc...).
 		SetBody(mail.TextPlain, mailBody).
-		SetPriority(mail.PriorityLow).
-		Attach(&mail.File{
-			Name:   filename,
-			Data:   data,
-			Inline: true,
-		})
+		SetPriority(mail.PriorityLow)
 
 	if err := email.Error; err != nil {
 		return err
 	}
 
 	return email.Send(mailSmtpClient)
+}
+
+func setMailAttachments(email *mail.Email, filesToAttach map[string][]byte) *mail.Email {
+	for fileName, fileData := range filesToAttach {
+		email.Attach(&mail.File{
+			Name:   fileName,
+			Data:   fileData,
+			Inline: true,
+		})
+	}
+	return email
 }
