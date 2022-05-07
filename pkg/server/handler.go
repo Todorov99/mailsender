@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/Todorov99/mailsender/pkg/controller"
+	"github.com/Todorov99/mailsender/pkg/global"
+	"github.com/Todorov99/mailsender/pkg/server/config"
 	"github.com/gorilla/mux"
 )
 
@@ -20,5 +22,9 @@ func HandleRequest(port string) error {
 	routes.HandleFunc("/api/mail/attachment/send", senderController.SendWithAttachments).Methods("POST")
 	routes.HandleFunc("/api/mail/send", senderController.Send).Methods("POST")
 
-	return http.ListenAndServe(fmt.Sprintf(":%s", port), routes)
+	if config.GetTLSCfg() == nil {
+		return http.ListenAndServe(fmt.Sprintf(":%s", port), routes)
+	}
+
+	return http.ListenAndServeTLS(fmt.Sprintf(":%s", port), fmt.Sprintf("%s/%s", global.CertificatesPath, config.GetTLSCfg().CertFile), fmt.Sprintf("%s/%s", global.CertificatesPath, config.GetTLSCfg().PrivateKey), routes)
 }
