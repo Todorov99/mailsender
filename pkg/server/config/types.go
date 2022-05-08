@@ -13,6 +13,8 @@ type Security struct {
 type TLS struct {
 	CertFile   string `yaml:"certFile,omitempty"`
 	PrivateKey string `yaml:"privateKey,omitempty"`
+	RootCACert string `yaml:"rootCACert,omitempty"`
+	RootCAKey  string `yaml:"rootCAKey,omitempty"`
 }
 
 type SMTPServerCfg struct {

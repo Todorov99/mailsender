@@ -16,3 +16,5 @@ security:
     certFile: mailSenderCert.pem
     #The matching for the certificate private key.
     privateKey: mailSenderKey.pem
+    rootCACert: rootCACert.pem
+    rootCAKey: rootCAKey.pem
