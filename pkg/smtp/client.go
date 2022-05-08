@@ -11,11 +11,6 @@ import (
 )
 
 func NewMailSMPTClient() (*mail.SMTPClient, error) {
-	// applicationProperties, err := config.LoadApplicationProperties(global.ApplicationPropertyFile)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	serverCfg := config.ServerProps()
 
 	v, err := vault.New(serverCfg.VaultType)
