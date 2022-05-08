@@ -1,0 +1,18 @@
+vaultType: plain
+SMTPServerCfg:
+  host: smtp.gmail.com
+  port: 587
+  passwordSecret: passwordSecret
+  keepAlive: true
+  connectionTimeout: 30s
+  sendTimeout: 30s
+security:
+  #If tls configuration is not provided HTTP server communication is configured
+  tls:
+    #The cert file is read from ./cfg/tls directly.
+    #If the certificate is signed by a certificate authority,
+    #the certFile should be the concatenation of the server's certificate,
+    #any intermediates, and the CA's certificate.
+    certFile: mailSenderCert.pem
+    #The matching for the certificate private key.
+    privateKey: mailSenderKey.pem

@@ -1,7 +1,8 @@
 package global
 
 const (
-	VaultPath               = "./vault.yaml"
+	VaultPath               = "./cfg/vault.yaml"
 	PlainVaultType          = "plain"
-	ApplicationPropertyFile = "./application_properties.yaml"
+	ApplicationPropertyFile = "./cfg/application_properties.yaml"
+	CertificatesPath        = "./cfg/tls/sec"
 )

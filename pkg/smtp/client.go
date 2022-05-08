@@ -11,12 +11,9 @@ import (
 )
 
 func NewMailSMPTClient() (*mail.SMTPClient, error) {
-	applicationProperties, err := config.LoadApplicationProperties(global.ApplicationPropertyFile)
-	if err != nil {
-		return nil, err
-	}
+	serverCfg := config.ServerProps()
 
-	v, err := vault.New(global.PlainVaultType)
+	v, err := vault.New(serverCfg.VaultType)
 	if err != nil {
 		return nil, err
 	}
@@ -24,24 +21,24 @@ func NewMailSMPTClient() (*mail.SMTPClient, error) {
 	server := mail.NewSMTPClient()
 
 	// SMTP Server
-	server.Host = applicationProperties.SMTPServerCfg.Host
-	server.Port = applicationProperties.SMTPServerCfg.Port
+	server.Host = serverCfg.SMTPServerCfg.Host
+	server.Port = serverCfg.SMTPServerCfg.Port
 
-	secret, err := v.Get(applicationProperties.SMTPServerCfg.PasswordSecret)
+	secret, err := v.Get(serverCfg.SMTPServerCfg.PasswordSecret)
 	if err != nil {
 		return nil, err
 	}
 	server.Username = secret.Name
 	server.Password = secret.Value
 	server.Encryption = mail.EncryptionSTARTTLS
-	server.KeepAlive = applicationProperties.SMTPServerCfg.KeepAlive
+	server.KeepAlive = serverCfg.SMTPServerCfg.KeepAlive
 
-	connectionTimeout, err := time.ParseDuration(applicationProperties.SMTPServerCfg.ConnectionTimeout)
+	connectionTimeout, err := time.ParseDuration(serverCfg.SMTPServerCfg.ConnectionTimeout)
 	if err != nil {
 		return nil, err
 	}
 
-	sendTimeout, err := time.ParseDuration(applicationProperties.SMTPServerCfg.ConnectionTimeout)
+	sendTimeout, err := time.ParseDuration(serverCfg.SMTPServerCfg.ConnectionTimeout)
 	if err != nil {
 		return nil, err
 	}
